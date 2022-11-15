@@ -14,6 +14,7 @@ Vue.config.productionTip = false
 
 import "@fontsource/ibm-plex-sans"
 
+
 new Vue({
   render: h => h(App),
 }).$mount('#app')
