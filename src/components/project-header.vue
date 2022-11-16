@@ -3,9 +3,7 @@
       <div class="container">
         <div class="header__wrapper">
           <nav class="navigation">
-            <a href="" class="navigation__link" @click.prevent="s">Товары<font-awesome-icon icon="fa-solid fa-chevron-down" /></a>
-            <a href="" class="navigation__link" @click.prevent="s">Услуги<font-awesome-icon icon="fa-solid fa-chevron-down" /></a>
-            <a href="" class="navigation__link" @click.prevent="s">Компания<font-awesome-icon icon="fa-solid fa-chevron-down" /></a>
+            <a href="" v-for=" (item, index) in headerLinks" :data-name="item" :key="index" class="navigation__link " @click.prevent="choiseCategory , isActive=index" v-bind:class="isActive==index?'active':''">{{item}}<font-awesome-icon icon="fa-solid fa-chevron-down" /></a>
           </nav>
           <a href="#" class="logo"><img src="../../public/logo.svg" alt="logo"></a>
           <div class="user-box">
@@ -20,34 +18,50 @@
         </div>
       </div>
 
-
       <div class="header__substrate"></div>
-      
-      <div class="header__menu" v-if="showHeaderMenu">
+
+
+
+
+        <div class="header__menu" v-if="showHeaderMenu">
           <div class="container">
             <div v-if="showMenu1" class="header__submenu header__substrates">
               <div class="header__submenu-column">
-                <div class="header__submenu-item" v-for="(el, index) in substratesList" :key="index">
-                  <img :src="require(`../assets/img/${el.img}.svg`)" alt="itemImage">
+                <div class="header__submenu-item" v-for="({img,title,specific_choice,diameter_choice, work_time, price }, index) in currentTypeList.transportType" :key="index">
+                  <img :src="require(`../assets/img/${img}.svg`)" alt="itemImage">
                   <div class="header__submenu-item-description">
-                    <h2 class="header__submenu-item-title">{{el.title}}</h2>
-                    <div class="header__submenu-item-links">
-                      <a href="" v-for="(el, index) in el.specific_choice" :key="index" class="header__submenu-item-link">{{el}}</a>
-                    </div>
-                    <div class="header__submenu-item-links">
-                      <a href="" v-for=" (el, index) in el.diameter_choice" :key="index" class="header__submenu-item-link">{{el}}</a>
-                    </div>
+                    <h2 class="header__submenu-item-title">{{title}}</h2>
+                    <template v-if="checkCategory == 'product'">
+                      <div class="header__submenu-item-links">
+                        <a href="" v-for="(el, index) in specific_choice" :key="index" class="header__submenu-item-text header__submenu-item-link">{{el}}</a>
+                      </div>
+                      <div class="header__submenu-item-links">
+                        <a href="" v-for=" (el, index) in diameter_choice" :key="index" class=" header__submenu-item-text header__submenu-item-link">{{el}}</a>
+                      </div>
+                    </template>
+                    <template v-else-if="checkCategory == 'servises'">
+                      <div class="header__submenu-item-links">
+                        <p class="header__submenu-item-text"><font-awesome-icon icon="fa-solid fa-clock" /> {{work_time}}</p>
+                      </div>
+                      <div class="header__submenu-item-links">
+                        <p  class="header__submenu-item-text"><font-awesome-icon icon="fa-solid fa-ruble-sign" /> {{price}}</p>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </div>
-              <div class="header__submenu-column">
-                <a href="#" class="header__submenu-link" v-for="(item, index) in substratesListCategory.category" :key="index">{{item}}</a> 
+              <div class="header__submenu-column header__submenu-column-right">
+                <a href="#" class="header__submenu-link" v-for="(item, index) in currentTypeList.currentProduct" :key="index">{{item}}</a> 
               </div>
             </div>
-            <div v-else-if="showMenu2" class="header__submenu services"></div>
+            <div v-else-if="showMenu2" class="header__submenu services">
+              
+            </div>
             <div v-else-if="showMenu3" class="header__submenu company"></div>
           </div>
-      </div>
+        </div>
+      
+      
     </header>  
   </template>
   
@@ -60,54 +74,90 @@
     },
     data() {
       return {
+        headerLinks:['Товары', 'Услуги', 'Компания'],
+        isActive: false,
         showHeaderMenu: true,
         showMenu1:true,
+
+        product:{},
+
+
         substratesList: [],
         substratesListCategory:{},
         servisesList: [],
         servisesListCategory:{},
         companyList:[],
+
+        currentTypeList: [],
+
+
+        checkCategory:''
       }
     },
     computed: {
-      // itemImage() {
-      //   return this.substratesList.forEach((el)=>{
-      //     require(`../assets/img/${el.img}.svg`);
-      //   })
-      // }
+      
     },
     methods: {
-      s(){
-        console.log('qwe')
+      choiseCategory(){
+        console.log(12);
+
+      },
+
+      editSubMenu(){
+        
       }
     },
     beforeMount(){
-      this.substratesList = [{
-        img: 'avto',
-        title: 'Автомобильные шины',
-        specific_choice: ['Летние','Зимние','Шипованые','Фрикционные','Б/у'],
-        diameter_choice: ['R13','R14','R15','R16','R17','R18','R19','R20'],
+      this.product = {
+        transportType:[
+          {
+            img: 'avto',
+            title: 'Автомобильные шины',
+            specific_choice: ['Летние','Зимние','Шипованые','Фрикционные','Б/у'],
+            diameter_choice: ['R13','R14','R15','R16','R17','R18','R19','R20'],
+          },
+          {
+            img: 'track',
+            title: 'Грузовые шины',
+            specific_choice: ['Ведущие','Универсальные','Рулевые','Прицеп','Рулевые + прицеп'],
+            diameter_choice: ['R22,5','R24','R21','R20','R19,5','R18','R19','R20'],
+          },
+          {
+            img: 'moto',
+            title: 'Мотошины',
+            specific_choice: ['Спорт','Спорт-турист','Чоппер/круйзер','Эндуро','Классика'],
+            diameter_choice: ['R12','R13','R14','R15','R16','R18','R19','R20']
+          },
+        ],
+        currentProduct : ['Аксессуары для шин, дисков и шиномонтажа','Аккумуляторы','Автомасла','Автоэлектроника','Автохимия и автокосметика','Внешний декор, тюнинг, защита','Инструменты и техническая помощь','Компрессоры']
+      
       },
-      {
-        img: 'track',
-        title: 'Грузовые шины',
-        specific_choice: ['Ведущие','Универсальные','Рулевые','Прицеп','Рулевые + прицеп'],
-        diameter_choice: ['R22,5','R24','R21','R20','R19,5','R18','R19','R20'],
-        category:[]
-      },
-      {
-        img: 'moto',
-        title: 'Мотошины',
-        specific_choice: ['Спорт','Спорт-турист','Чоппер/круйзер','Эндуро','Классика'],
-        diameter_choice: ['R12','R13','R14','R15','R16','R18','R19','R20'],
-      },],
 
-      this.substratesListCategory = {
-       category:['Аксессуары для шин, дисков и шиномонтажа','Аккумуляторы','Автомасла','Автоэлектроника','Автохимия и автокосметика','Внешний декор', 'тюнинг', 'защита','Инструменты и техническая помощь','Компрессоры']
-      },
-      this.servisesListCategory ={
-        category:['Ошиповка зимних шин','Сезонное хранение шин','Сход развал']
+
+
+
+      this.servises={
+        transportType: [
+          {
+            img: 'disk',
+            title: 'Шиномонтаж',
+            work_time: 'Ежедневно с 9:00 до 21:00, без перерывов',
+            price: 'от 500 ₽'
+          },
+          {
+            img: 'weel',
+            title: 'Ремонт и правка дисков',
+            work_time: 'Ежедневно с 9:00 до 21:00, без перерывов',
+            price: 'от 500 ₽'
+          }
+        ],
+        currentProduct:['Ошиповка зимних шин','Сезонное хранение шин','Сход развал']
       }
+
+      
+      
+      
+      
       
     },
   }
@@ -154,6 +204,20 @@
         font-size: 16px;
         padding: 27px 16px 28px 16px;
         margin-right: 8px;
+        transition-duration: 300ms;
+        svg{
+          transition-duration: 300ms;
+        }
+        &.active{
+          border-bottom: 1px solid $secondory-color;
+          color:$secondory-color;
+          svg{
+            transform:rotate(180deg);
+            
+          }
+        }
+       
+
       }
       .navigation__link:last-child{
         margin-right: 0;
@@ -187,16 +251,30 @@
         width: 10px;
       }
     }
+    .header__menu{
+      background: #2B3143;
+      position: absolute;
+      width: 100%;
+      padding: 32px 0 48px;
+    }
     .header__submenu{
       display: flex;
       justify-content: space-between;
     }
     .header__submenu-column{
+      display: flex;
+      flex-direction: column;
       max-width: 600px;
+    }
+    .header__submenu-column-right{
+      min-width: 490px;
     }
     .header__submenu-item{
       display: flex;
       align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #3E465F;
     }
     .header__submenu-item-description{
       margin-left: 24px;
@@ -206,7 +284,7 @@
       font-weight: 500;
       font-size: 24px;
       line-height: 32px;
-      color: #FF850E;
+      color: $secondory-color;
       margin-bottom: 16px;
       
     }
@@ -214,7 +292,9 @@
       display: flex;
       margin-bottom: 8px;
     }
-    .header__submenu-item-link{
+
+
+    .header__submenu-item-text{
       font-family: 'IBM Plex Sans';
       font-style: normal;
       font-weight: 400;
@@ -223,6 +303,35 @@
       color: #E5E5E5;
       text-decoration: none;
       margin-right: 8px;
+      transition: all .3s;
+
+      svg{
+        margin-right: 8px;
+      }
+    }
+
+    .header__submenu-item-link{
+      &:hover{
+        color: $secondory-color;
+
+      }
+    }
+    
+    .header__submenu-link{
+      color: #fff;
+      font-family: 'IBM Plex Sans';
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 24px;
+      border-bottom: 1px solid #3E465F;
+      text-decoration: none;
+      padding: 12px 16px 11px;
+      box-sizing: border-box;
+      transition: all .3s;
+
+      &:hover{
+        color:$secondory-color;
+      }
     }
   </style>
   

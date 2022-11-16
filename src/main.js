@@ -3,9 +3,9 @@ import App from './App.vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faCartShopping, faChevronDown, faHeart, faMagnifyingGlass, faUserSecret } from '@fortawesome/free-solid-svg-icons'
+import { faCartShopping, faChevronDown, faClock, faHeart, faMagnifyingGlass, faRubleSign, faUserSecret } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faUserSecret, faCartShopping, faChevronDown, faMagnifyingGlass, faHeart)
+library.add(faUserSecret, faCartShopping, faChevronDown, faMagnifyingGlass,faClock,faRubleSign, faHeart,)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon, )
 
