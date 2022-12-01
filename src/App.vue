@@ -22,17 +22,11 @@ export default {
 
 <style lang="scss">
   @import './assets/scss/varibles.scss';
-
-
+  @import './assets/scss/main.scss';
 
   *{
     margin: 0;
     padding: 0;
   }
-  #app {
-    font-family: "IBM Plex Sans", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #2c3e50;
-  }
+  
 </style>

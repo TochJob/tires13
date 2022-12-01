@@ -3,15 +3,11 @@
       <div class="container">
         <div class="header__wrapper">
           <nav class="navigation">
-            <a href="" v-for=" (item, index) in headerLinks" :data-name="item" :key="index" class="navigation__link " @click.prevent="choiseCategory , isActive=index" v-bind:class="isActive==index?'active':''">{{item}}<font-awesome-icon icon="fa-solid fa-chevron-down" /></a>
+            <a href="" v-for=" (item, index) in headerLinks" :data-name="item" :key="index" class="navigation__link " @click.prevent="choiseCategory(index, item)" v-bind:class="isActive==index ? 'active': ''">{{item}}<font-awesome-icon icon="fa-solid fa-chevron-down" /></a>
           </nav>
           <a href="#" class="logo"><img src="../../public/logo.svg" alt="logo"></a>
           <div class="user-box">
             <button class="button user-box__search"><font-awesome-icon icon="fa-solid fa-magnifying-glass" /></button>
-            <button class="button user-box__user">
-              Личный кабинет 
-              <font-awesome-icon icon="fa-solid fa-chevron-down" />
-            </button>
             <button class="button user-box__favorite"><font-awesome-icon icon="fa-solid fa-heart" /></button>
             <button class="button user-box__basket"><font-awesome-icon icon="fa-solid fa-cart-shopping" /></button>
           </div>
@@ -22,42 +18,48 @@
 
 
 
-
         <div class="header__menu" v-if="showHeaderMenu">
           <div class="container">
-            <div v-if="showMenu1" class="header__submenu header__substrates">
-              <div class="header__submenu-column">
-                <div class="header__submenu-item" v-for="({img,title,specific_choice,diameter_choice, work_time, price }, index) in currentTypeList.transportType" :key="index">
-                  <img :src="require(`../assets/img/${img}.svg`)" alt="itemImage">
-                  <div class="header__submenu-item-description">
-                    <h2 class="header__submenu-item-title">{{title}}</h2>
-                    <template v-if="checkCategory == 'product'">
-                      <div class="header__submenu-item-links">
-                        <a href="" v-for="(el, index) in specific_choice" :key="index" class="header__submenu-item-text header__submenu-item-link">{{el}}</a>
-                      </div>
-                      <div class="header__submenu-item-links">
-                        <a href="" v-for=" (el, index) in diameter_choice" :key="index" class=" header__submenu-item-text header__submenu-item-link">{{el}}</a>
-                      </div>
-                    </template>
-                    <template v-else-if="checkCategory == 'servises'">
-                      <div class="header__submenu-item-links">
-                        <p class="header__submenu-item-text"><font-awesome-icon icon="fa-solid fa-clock" /> {{work_time}}</p>
-                      </div>
-                      <div class="header__submenu-item-links">
-                        <p  class="header__submenu-item-text"><font-awesome-icon icon="fa-solid fa-ruble-sign" /> {{price}}</p>
-                      </div>
-                    </template>
+            <div class="header__submenu header__substrates">
+              <template v-if="this.checkCategory != 'company'">
+                <div class="header__submenu-column">
+                  <div class="header__submenu-item" v-for="({img,title,specific_choice,diameter_choice, work_time, price }, index) in currentTypeList.transportType" :key="index">
+                    <img :src="require(`../assets/img/${img}.svg`)" alt="itemImage">
+                    <div class="header__submenu-item-description">
+                      <h2 class="header__submenu-item-title">{{title}}</h2>
+                      <template v-if="checkCategory == 'product'">
+                        <div class="header__submenu-item-links">
+                          <a href="" v-for="(el, index) in specific_choice" :key="index" class="header__submenu-item-text header__submenu-item-link">{{el}}</a>
+                        </div>
+                        <div class="header__submenu-item-links">
+                          <a href="" v-for=" (el, index) in diameter_choice" :key="index" class=" header__submenu-item-text header__submenu-item-link">{{el}}</a>
+                        </div>
+                      </template>
+                      <template v-else-if="checkCategory == 'servises'">
+                        <div class="header__submenu-item-links">
+                          <p class="header__submenu-item-text"><font-awesome-icon icon="fa-solid fa-clock" /> {{work_time}}</p>
+                        </div>
+                        <div class="header__submenu-item-links">
+                          <p  class="header__submenu-item-text"><font-awesome-icon icon="fa-solid fa-ruble-sign" /> {{price}}</p>
+                        </div>
+                      </template>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="header__submenu-column header__submenu-column-right">
-                <a href="#" class="header__submenu-link" v-for="(item, index) in currentTypeList.currentProduct" :key="index">{{item}}</a> 
-              </div>
+                <div class="header__submenu-column header__submenu-column-right">
+                  <a href="#" class="header__submenu-link" v-for="(item, index) in currentTypeList.currentProduct" :key="index">{{item}}</a> 
+                </div>
+              </template>
+              <template v-else-if="this.checkCategory == 'company'">
+                <div class="company-box ">
+                  <a href="#" class="header__submenu-link" v-for="(item, index) in currentTypeList.currentProduct" :key="index">{{item}}</a> 
+                </div>
+              </template>
+              <template v-else-if="this.checkCategory == 'user'" >
+                
+              </template>
             </div>
-            <div v-else-if="showMenu2" class="header__submenu services">
-              
-            </div>
-            <div v-else-if="showMenu3" class="header__submenu company"></div>
+
           </div>
         </div>
       
@@ -74,12 +76,14 @@
     },
     data() {
       return {
-        headerLinks:['Товары', 'Услуги', 'Компания'],
-        isActive: false,
-        showHeaderMenu: true,
-        showMenu1:true,
+        headerLinks:['Товары', 'Услуги', 'Компания','Личный кабинет'],
+        isActive: -1,
+        showHeaderMenu: false,
 
         product:{},
+        servises:{},
+        company:[],
+        
 
 
         substratesList: [],
@@ -90,7 +94,6 @@
 
         currentTypeList: [],
 
-
         checkCategory:''
       }
     },
@@ -98,14 +101,34 @@
       
     },
     methods: {
-      choiseCategory(){
-        console.log(12);
+      choiseCategory(index, el){
+        if(this.isActive == index){ 
+          this.showHeaderMenu = false
+          this.isActive = -1 
+          this.currentTypeList = ''
+        }else{ 
+          this.showHeaderMenu = true
 
+          this.isActive = index;
+          this.fillCategory(el);
+        }
       },
-
-      editSubMenu(){
-        
+      fillCategory(navEl){
+        console.log(navEl);
+        if(navEl === 'Товары'){
+          this.currentTypeList = this.product
+          this.checkCategory = 'product'
+        }else if(navEl === 'Услуги'){
+          this.checkCategory = 'servises'
+          this.currentTypeList = this.servises
+        }else if(navEl === 'Компания'){
+          this.checkCategory = 'company'
+          this.currentTypeList = this.company
+        }else if(navEl === 'Личный кабинет'){
+          this.checkCategory = 'user'
+        }
       }
+
     },
     beforeMount(){
       this.product = {
@@ -133,7 +156,7 @@
       
       },
 
-
+     
 
 
       this.servises={
@@ -152,13 +175,18 @@
           }
         ],
         currentProduct:['Ошиповка зимних шин','Сезонное хранение шин','Сход развал']
-      }
+      },
 
+      this.company ={
+        currentProduct:['О компании','Контакты','Статьи и новости','Акции и скидки','Доставка','Оптовым клиентам','Оплата','Кредит','Гарантия','Возврат товара','Подарочные сертифиакты']
+      }
       
       
       
       
-      
+    },
+    mounted() {
+      this.$el.querySelector('.user-box__search').insertAdjacentElement('afterend',this.$el.querySelector('a[data-name="Личный кабинет"]'));  
     },
   }
   
@@ -167,171 +195,5 @@
   <style lang="scss">
     @import '../assets/scss/varibles.scss';
 
-    header{
-      background: $base-color;
-      position: relative;
-      z-index: 9;
-      padding-top: 16px;
-      .header__substrate{
-        position: absolute;
-        background: $base-color;
-        height: 16px;
-        width: 96px;
-        bottom: -16px;
-        left: 50%;
-        transform: translate(-50%,0);
-        z-index: 8;
-        border-radius: 0px 0px 16px 16px;
-      }
-    }
-    .container{
-      width: 1224px;
-      margin: 0 auto;
-    }
-    .header__wrapper{
-      display: flex;
-      align-items: center;
-    }
-    .navigation{
-      display: flex;
-      align-self: start;
-      margin-right: 235px;
-
-      .navigation__link{
-        color: #fff;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 16px;
-        padding: 27px 16px 28px 16px;
-        margin-right: 8px;
-        transition-duration: 300ms;
-        svg{
-          transition-duration: 300ms;
-        }
-        &.active{
-          border-bottom: 1px solid $secondory-color;
-          color:$secondory-color;
-          svg{
-            transform:rotate(180deg);
-            
-          }
-        }
-       
-
-      }
-      .navigation__link:last-child{
-        margin-right: 0;
-      }
-      .fa-chevron-down{
-        font-size: 10px;
-        margin-left: 7px;
-      }
-    }
-    .user-box{
-      display: flex;
-      margin-left: auto;
-
-      .button{
-        background: transparent;
-        color: #fff;
-        border: none;
-        min-height: 80px;
-        min-width: 80px;
-        box-sizing: border-box;
-        padding: 15px;
-        font-size: 16px;
-        font-family: "IBM Plex Sans", sans-serif;
-        cursor: pointer;
-      }
-      .fa-solid{
-        width: 16px;
-      }
-      .fa-chevron-down{
-        margin-left: 7px;
-        width: 10px;
-      }
-    }
-    .header__menu{
-      background: #2B3143;
-      position: absolute;
-      width: 100%;
-      padding: 32px 0 48px;
-    }
-    .header__submenu{
-      display: flex;
-      justify-content: space-between;
-    }
-    .header__submenu-column{
-      display: flex;
-      flex-direction: column;
-      max-width: 600px;
-    }
-    .header__submenu-column-right{
-      min-width: 490px;
-    }
-    .header__submenu-item{
-      display: flex;
-      align-items: center;
-      padding-bottom: 24px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid #3E465F;
-    }
-    .header__submenu-item-description{
-      margin-left: 24px;
-    }
-    .header__submenu-item-title{
-      font-family: 'IBM Plex Sans';
-      font-weight: 500;
-      font-size: 24px;
-      line-height: 32px;
-      color: $secondory-color;
-      margin-bottom: 16px;
-      
-    }
-    .header__submenu-item-links{
-      display: flex;
-      margin-bottom: 8px;
-    }
-
-
-    .header__submenu-item-text{
-      font-family: 'IBM Plex Sans';
-      font-style: normal;
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 16px;
-      color: #E5E5E5;
-      text-decoration: none;
-      margin-right: 8px;
-      transition: all .3s;
-
-      svg{
-        margin-right: 8px;
-      }
-    }
-
-    .header__submenu-item-link{
-      &:hover{
-        color: $secondory-color;
-
-      }
-    }
-    
-    .header__submenu-link{
-      color: #fff;
-      font-family: 'IBM Plex Sans';
-      font-weight: 500;
-      font-size: 16px;
-      line-height: 24px;
-      border-bottom: 1px solid #3E465F;
-      text-decoration: none;
-      padding: 12px 16px 11px;
-      box-sizing: border-box;
-      transition: all .3s;
-
-      &:hover{
-        color:$secondory-color;
-      }
-    }
   </style>
   
